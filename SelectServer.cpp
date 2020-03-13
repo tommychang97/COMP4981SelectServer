@@ -30,9 +30,10 @@
 #define MAXLINE 4096
 #define  CREATE 0
 #define  DESTROY 1
-#define  GET_ALL 2
-#define  JOIN 3
-#define  LEAVE 4
+#define GET_ONE 2
+#define  GET_ALL 3
+#define  JOIN 4
+#define  LEAVE 5
 
 using namespace std;
 using namespace rapidjson;
@@ -171,7 +172,6 @@ int main (int argc, char **argv)
 		SystemFatal("bind error");
 	
 	// Listen for connections
-	// queue up to LISTENQ connect requests
 	listen(listen_sd, 20);
 
 	maxfd = listen_sd;	// initialize
@@ -304,6 +304,13 @@ int main (int argc, char **argv)
 					            cout << "Failed to send!" << endl;
 							}
 							break;
+						case GET_ONE:
+							cout << "Received client request to get one!" << endl;
+							lobbyID = document["lobbyId"].GetInt();
+							lobbyResponse = lobbyManager->getLobby(lobbyID);
+								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
+					            cout << "Failed to send!" << endl;
+							break;	
 						case GET_ALL:
 							cout << "Received client request for lobby list!" << endl;
 							lobbyResponse = lobbyManager->getLobbyList();

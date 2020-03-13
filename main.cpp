@@ -28,9 +28,10 @@ using namespace rapidjson;
 #define SERVER_TCP_PORT 7000
 #define  CREATE 0
 #define  DESTROY 1
-#define  GET_ALL 2
-#define  JOIN 3
-#define  LEAVE 4
+#define  GET_ONE 2
+#define  GET_ALL 3
+#define  JOIN 4
+#define  LEAVE 5
 
 
 volatile int UDP_PORT = 12500;
@@ -137,7 +138,7 @@ void * clientThread(Client * client)
 				string lobbyResponse;
 				if (request == "lobbyRequest") {	
 					switch(action) {
-						case CREATE:
+						case 0:
 							cout << "request received to create lobby!" << endl;
 							//create lobby, send lobby back
 							lobbyID = lobbyManager->createLobby(client);
@@ -145,42 +146,40 @@ void * clientThread(Client * client)
 							cout << "Lobby response: " << lobbyResponse << endl;
 							send(sd, lobbyResponse.c_str(), lobbyResponse.size(), 0);
 							break;
-						case DESTROY:
+						case 1:
 							{
-								cout << "Request received to destroy the lobby!" << endl;
-								lobbyID = lobbyManager->verifyLobbyOwner(client);
-								if (lobbyID == -1)
-								{
-									cout << "The current client is not a Lobby owner!" << endl;
-									break;
-								}
-								Lobby* lobby1 = lobbyManager->getLobbyObject(lobbyID);
-								lobby1->removeAllClients();
-								lobbyManager->deleteLobby(lobbyID);
-								lobbyResponse = lobbyManager->getLobbyList();
-								cout << "Lobby list response: " << lobbyResponse << endl;
-								send(sd, lobbyResponse.c_str(), lobbyResponse.size(), 0);
+								// cout << "Request received to destroy the lobby!" << endl;
+								// lobbyID = lobbyManager->verifyLobbyOwner(client);
+								// if (lobbyID == -1)
+								// {
+								// 	cout << "The current client is not a Lobby owner!" << endl;
+								// 	break;
+								// }
+								// Lobby* lobby1 = lobbyManager->getLobbyObject(lobbyID);
+								// lobby1->removeAllClients();
+								// lobbyManager->deleteLobby(lobbyID);
+								// lobbyResponse = lobbyManager->getLobbyList();
+								// cout << "Lobby list response: " << lobbyResponse << endl;
+								// send(sd, lobbyResponse.c_str(), lobbyResponse.size(), 0);
+								break;
 							}
-							// {
-							// 	Value::ConstMemberIterator itr = document.FindMember("lobbyId");
-							// 	if (itr == document.MemberEnd()) {
-							// 		throw std::invalid_argument("bad json object");
-							// 	}
-							// 	Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
-							// 	lobby->removeAllClients();
-							// 	lobbyResponse = lobbyManager->getLobby(lobbyID);
-							// 	send(sd, lobbyResponse.c_str(), sizeof(lobbyResponse),0);
-							// }
-							break;
-						case GET_ALL:
+						case 2:
+								cout << "received request to get_one!" << endl;
+								lobbyID = document["lobbyId"].GetInt();
+								lobbyResponse = lobbyManager->getLobby(lobbyID);
+								cout << "Lobby list response: " << lobbyResponse << endl;
+								send(sd, lobbyResponse.c_str(), lobbyResponse.size(),0);
+								break;	
+						case 3:
 							// get a json string containing the lobby list, send the list back
 							cout << "received request to get lobby list!" << endl;
 							lobbyResponse = lobbyManager->getLobbyList();
 							cout << lobbyResponse << endl;
 							send(sd, lobbyResponse.c_str(), lobbyResponse.size(),0);
 							break;
-						case JOIN:
+						case 4:
 							{
+								cout << "received request to join lobby!" << endl;
 							// add the client to the provided Lobby ID. return an updated string of the lobby and send it
 								Value::ConstMemberIterator itr = document.FindMember("lobbyId");
 								if (itr == document.MemberEnd()) {
@@ -192,9 +191,9 @@ void * clientThread(Client * client)
 								lobbyResponse = lobbyManager->getLobby(lobbyID);
 								cout << "Lobby list response: " << lobbyResponse << endl;
 								send(sd, lobbyResponse.c_str(), lobbyResponse.size(),0);
+								break;
 							}
-							break;
-						case LEAVE:
+						case 5:
 							{
 								// Value::ConstMemberIterator itr = document.FindMember("lobbyId");
 								// if (itr == document.MemberEnd()) {
@@ -205,8 +204,8 @@ void * clientThread(Client * client)
 								// lobby->removeClient(client);
 								// lobbyResponse = lobbyManager->getLobby(lobbyID);
 								// send(sd, lobbyResponse.c_str(), sizeof(lobbyResponse),0);
+								break;
 							}
-							break;
 					}
 				}
 				else if (request == "switchUserSide") {
