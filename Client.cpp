@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
 int Client::playerID = 0;
-Client::Client(string characterClass, int team, int socket, int UDPPort, int IP){
+Client::Client(int characterClass, int team, int socket, int UDPPort, int IP){
     this->player_id = playerID++;
     this->characterClass = characterClass;
     this->status = false;
@@ -58,13 +58,13 @@ void Client::setStatus(string status)
 }
 
 
-string Client::getCharacterClass()
+int Client::getCharacterClass()
 {
     return this->characterClass;
 }
 
 
-void Client::setCharacterClass(string characterClass)
+void Client::setCharacterClass(int characterClass)
 {
     this->characterClass = characterClass;
 }

@@ -95,6 +95,7 @@ int main (int argc, char **argv)
 	const char * join = "\"{\"messageType\":\"lobbyRequest\",\"action\":4,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * getAll = "\"{\"messageType\":\"lobbyRequest\",\"action\":2,\"userId\":\"0\"}\"";
 	const char * leave = "\"{\"messageType\":\"lobbyRequest\",\"action\":5,\"userId\":\"0\",\"lobbyId\":\"1\"}\"";
+	const char * switchTeam = "\"{\"messageType\":\"switchUserSide\",\"userId\":\"0\",\"lobbyId\":\"1\"}\"";
 
 
 	char buf1[1024];
@@ -113,22 +114,30 @@ int main (int argc, char **argv)
 	n = recv (sd, buf1, 1000, 0);
 	printf ("%s\n", buf1);
 
-	/* TEST CREATING LOBBY */
-	send (sd, create, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf2, 1000, 0);
-	printf ("%s\n", buf2);
+	// /* TEST CREATING LOBBY */
+	// send (sd, create, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf2, 1000, 0);
+	// printf ("%s\n", buf2);
 
-	send (sd, getAll, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf3, 1000, 0);
-	printf ("%s\n", buf3);
+	// send (sd, switchTeam, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf3, 1000, 0);
+	// printf ("%s\n", buf3);
+
+	// send (sd, getAll, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf4,1000, 0);
+	// printf ("%s\n", buf4);
 
 	// send (sd, getAll, BUFLEN, 0);
 	// printf("Receive:\n");

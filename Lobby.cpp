@@ -68,7 +68,7 @@ void Lobby::removeClient(Client *client)
             break;
         }
     }
-    client->setCharacterClass("default");
+    client->setCharacterClass(0);
     client->setLobby_Id(-1);
     client->setTeam(0);
     currentPlayers--;

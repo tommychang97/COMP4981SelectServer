@@ -239,14 +239,13 @@ int main (int argc, char **argv)
 			if (!validateJSON(buffer)) {
 				throw std::invalid_argument("bad json object");
 			}
-
             // Check the message type, can either be connect or a lobby request
 			string request = document["messageType"].GetString();
 
 			if (request == "connect") {
 				cout << "A new client has connected to the server!" << endl;
                 //  Create a new client, add it to the list, and return its id and UDP Port number.
-                Client * newClient = new Client("default", 0, new_sd, UDP_PORT++, atoi(inet_ntoa(client_addr.sin_addr)));
+                Client * newClient = new Client(0, 0, new_sd, UDP_PORT++, atoi(inet_ntoa(client_addr.sin_addr)));
 		        clientList.push_back(newClient);
 				Value::ConstMemberIterator itr = document.FindMember("username");
 				if (itr == document.MemberEnd()) {
@@ -381,7 +380,7 @@ int main (int argc, char **argv)
 					if (itr == document.MemberEnd()) {
 						throw std::invalid_argument("bad json object");
 					}
-					string newClass = document["classType"].GetString();
+					int newClass = document["classType"].GetInt();
 					clientObj->setCharacterClass(newClass);
 					lobbyID = std::stoi(document["lobbyId"].GetString());
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
