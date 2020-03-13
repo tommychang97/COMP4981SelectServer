@@ -114,34 +114,34 @@ int main (int argc, char **argv)
 	n = recv (sd, rbuf, 1000, 0);
 	printf ("%s\n", rbuf);
 
-	/* TEST */
-	send (sd, newBuf2, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, rbuf, 1000, 0);
-	printf ("%s\n", rbuf);
+	// /* TEST */
+	// send (sd, newBuf2, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, rbuf, 1000, 0);
+	// printf ("%s\n", rbuf);
 
-	char newbuf5[1024];
-	send (sd, leave, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, newbuf5, 1000, 0);
-	printf ("%s\n", newbuf5);
+	// char newbuf5[1024];
+	// send (sd, leave, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, newbuf5, 1000, 0);
+	// printf ("%s\n", newbuf5);
 
 
-	/* TEST GETALL LOBBY */
-	char newbuf[1024];
-	send (sd, newBuf3, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, newbuf, 1000, 0);
-	printf ("%s\n", newbuf);
+	// /* TEST GETALL LOBBY */
+	// char newbuf[1024];
+	// send (sd, newBuf3, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, newbuf, 1000, 0);
+	// printf ("%s\n", newbuf);
 
 	// /* TEST DESTROY LOBBY*/
 	// char tmpbuf[1024];
@@ -151,10 +151,6 @@ int main (int argc, char **argv)
 	// bytes_to_read = BUFLEN;
 	// n = recv(sd, tmpbuf, 1000, 0);
 	// printf ("%s\n", tmpbuf);
-
-	while (1) {
-
-	}
 	fflush(stdout);
 	close (sd);
 	return (0);

@@ -36,17 +36,19 @@
 
 using namespace std;
 using namespace rapidjson;
+
 // Function Prototypes
 static void SystemFatal(const char* );
 
+
+// Globals
 volatile int UDP_PORT = 12500;
 LobbyManager * lobbyManager = new LobbyManager();
 Document document;
 std::vector<Client*>clientList;
 
 int validateJSON(char * buffer) {
-
-
+	/* This portion is used to test with your own client */
 	if (document.Parse(buffer).HasParseError()) {
 		cout << "Parse error" << endl;
 		return 0;
@@ -57,7 +59,10 @@ int validateJSON(char * buffer) {
 		return 0;
 	}
 	return 1;
-	
+	/*													*/
+
+	// THIS PART IS REQUIRED IN ORDER TO PARSE THE CLIENT API'S REQUEST DUE TO ADDED BACKSLASHES
+	/*																						*/
 	// string str(buffer);
 	// str.erase(std::remove(str.begin(), str.end(), '\\'), str.end());
 	// str.erase(0,1);
@@ -77,8 +82,13 @@ int validateJSON(char * buffer) {
 	// 	return 0;
 	// }
 	// return 1;
+	/*																						*/
 	
 }
+
+/*
+	This function is used to send the initial respones back to the client when they connect to the server
+*/
 string connectResponse(Client *client) {
 	// const char * json = "{\"userID\":0,\"UDPPort\":0,\"statusCode\":200,\"response\":{\"docs\":[{\"eircode\":\"D02 YN32\"}]}}";
 	const char * json = "{\"statusCode\":200,\"userID\":0,\"UDPPort\":0}";
@@ -94,12 +104,19 @@ string connectResponse(Client *client) {
 	return buffer.GetString();
 }
 
+/*
+	Temporary wrapper function that prints out the response to be sent, and sends it to the the specified socket
+*/
 int sendResponse(int socket, string response) {
     std::cout << "Sending back response: " << response.c_str() << endl;
 	int n = send(socket, response.c_str(), response.size(), 0);
     return n;
 }
 
+/*
+	Temporary function that will retrieve a client object from the client list based on the Id.
+	Might create a ClientManager class that will handle this function.
+*/
 Client * getClient(int playerId) {
     for (int j = 0; j < clientList.size(); j++) {
         if (clientList[j]->getPlayer_Id() == playerId) {
@@ -109,6 +126,9 @@ Client * getClient(int playerId) {
     return NULL;
 }
 
+/*
+	Start of the program.
+*/
 int main (int argc, char **argv)
 {
     char buffer[BUFLEN];
@@ -163,6 +183,7 @@ int main (int argc, char **argv)
  	FD_ZERO(&allset);
    	FD_SET(listen_sd, &allset);
     int UDP_PORT = 12000;
+	int sent;
 	while (TRUE)
 	{
    		rset = allset;               // structure assignment
@@ -170,7 +191,7 @@ int main (int argc, char **argv)
 
         if (FD_ISSET(listen_sd, &rset)) {// new client connection
             client_len = sizeof(client_addr);
-            if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
+            if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, (socklen_t*)&client_len)) == -1)
 				SystemFatal("accept error");
                 printf(" Remote Address:  %s\n", inet_ntoa(client_addr.sin_addr));
             for (i = 0; i < FD_SETSIZE; i++)
@@ -230,7 +251,7 @@ int main (int argc, char **argv)
 				newClient->setPlayer_name(username);
 				newClient->setStatus("false");
 				string response = connectResponse(newClient);
-                if ((n = sendResponse(sockfd, response)) < 0)
+                if ((sent = sendResponse(sockfd, response)) < 0)
 					cout << "Failed to send!" << endl;
 			} 
 			else {
@@ -249,6 +270,10 @@ int main (int argc, char **argv)
 				if (itr == document.MemberEnd()) {
 					throw std::invalid_argument("bad json object");
 				}
+				// Value::ConstMemberIterator itr = document.FindMember("lobbyId");
+				// 	if (itr == document.MemberEnd()) {
+				// 	throw std::invalid_argument("bad json object");
+				// }
 				int action = document["action"].GetInt();
 				int lobbyID;
 				string lobbyResponse;
@@ -259,7 +284,7 @@ int main (int argc, char **argv)
 							//create lobby, send lobby back
 							lobbyID = lobbyManager->createLobby(clientObj);
 							lobbyResponse = lobbyManager->getLobby(lobbyID);
-							if ((n = sendResponse(sockfd, lobbyResponse)) < 0)
+							if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
 							break;
 						case DESTROY:
@@ -275,14 +300,14 @@ int main (int argc, char **argv)
 								lobby1->removeAllClients();
 								lobbyManager->deleteLobby(lobbyID);
 								lobbyResponse = lobbyManager->getLobbyList();
-								if ((n = sendResponse(sockfd, lobbyResponse)) < 0)
+								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
 							}
 							break;
 						case GET_ALL:
 							cout << "Received client request for lobby list!" << endl;
 							lobbyResponse = lobbyManager->getLobbyList();
-                            if ((n = sendResponse(sockfd, lobbyResponse)) < 0)
+                            if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
 							break;
 						case JOIN:
@@ -295,7 +320,7 @@ int main (int argc, char **argv)
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
 								lobby->addClient(clientObj);
 								lobbyResponse = lobbyManager->getLobby(lobbyID);
-								if ((n = sendResponse(sockfd, lobbyResponse)) < 0)
+								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
 							}
 							break;
@@ -309,7 +334,7 @@ int main (int argc, char **argv)
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
 								lobby->removeClient(clientObj);
                                 lobbyResponse = lobbyManager->getLobby(lobbyID);
-								if ((n = sendResponse(sockfd, lobbyResponse)) < 0)
+								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
 							}
 							break;
@@ -317,14 +342,37 @@ int main (int argc, char **argv)
 				}
 				else if (request == "switchUserSide") {
 					clientObj->getTeam() == 0? clientObj->setTeam(1) : clientObj->setTeam(0);
-					// send response
+					lobbyID = document["lobbyId"].GetInt();
+					lobbyResponse = lobbyManager->getLobby(lobbyID);
+					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
+						cout << "Failed to send!" << endl;
 				}
 				else if (request == "switchStatusReady") {
+					Value::ConstMemberIterator itr = document.FindMember("lobbyId");
+					if (itr == document.MemberEnd()) {
+						throw std::invalid_argument("bad json object");
+					}
 					clientObj->getStatus() == "true"? clientObj->setStatus("false") : clientObj->setStatus("true");
-					//send response
+					lobbyID = document["lobbyId"].GetInt();
+					lobbyResponse = lobbyManager->getLobby(lobbyID);
+					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
+						cout << "Failed to send!" << endl;
 				}
 				else if (request == "switchPlayerClass") {
-
+					Value::ConstMemberIterator itr = document.FindMember("lobbyId");
+					if (itr == document.MemberEnd()) {
+						throw std::invalid_argument("bad json object");
+					}
+					itr = document.FindMember("classType");
+					if (itr == document.MemberEnd()) {
+						throw std::invalid_argument("bad json object");
+					}
+					string newClass = document["classType"].GetString();
+					clientObj->setCharacterClass(newClass);
+					lobbyID = document["lobbyId"].GetInt();
+					lobbyResponse = lobbyManager->getLobby(lobbyID);
+					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
+						cout << "Failed to send!" << endl;
 				}
             }
 		} catch (...) {

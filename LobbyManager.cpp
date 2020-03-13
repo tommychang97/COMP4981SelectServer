@@ -116,7 +116,7 @@ void LobbyManager::deleteLobby(int lobbyId)
 			vector<Client*> list = (*it)->getClientList();
 			for (int i = 0; i < numPlayers; i++)
 			{
-				list[i]->setLobby_Id(0);
+				list[i]->setLobby_Id(-1);
 			}
 			lobbyList.erase(it);
 			break;
@@ -143,7 +143,15 @@ int LobbyManager::createLobby(Client *client)
  */
 Lobby *LobbyManager::getLobbyObject(int id)
 {
-	return lobbyList[id];
+	
+	for (auto it = lobbyList.begin(); it != lobbyList.end(); it++)
+	{
+		if ((*it)->getId() == id)
+		{
+			return (*it);
+		}
+	}
+	return NULL;
 }
 
 /*
