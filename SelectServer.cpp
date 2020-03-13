@@ -50,30 +50,7 @@ std::vector<Client*>clientList;
 
 int validateJSON(char * buffer) {
 	/* This portion is used to test with your own client */
-	if (document.Parse(buffer).HasParseError()) {
-		cout << "Parse error" << endl;
-		return 0;
-	}
-	Value::ConstMemberIterator itr = document.FindMember("messageType");
-	if (itr == document.MemberEnd()) {
-		cout << "Cannot find message type" << endl;
-		return 0;
-	}
-	return 1;
-	/*													*/
-
-	// THIS PART IS REQUIRED IN ORDER TO PARSE THE CLIENT API'S REQUEST DUE TO ADDED BACKSLASHES
-	/*																						*/
-	// string str(buffer);
-	// str.erase(std::remove(str.begin(), str.end(), '\\'), str.end());
-	// str.erase(0,1);
-	// str.pop_back();
-
-	// int n = sizeof(str);
-	// char temp[n];
-	// strcpy(temp, str.c_str());
-
-	// if (document.Parse(temp).HasParseError()) {
+	// if (document.Parse(buffer).HasParseError()) {
 	// 	cout << "Parse error" << endl;
 	// 	return 0;
 	// }
@@ -83,6 +60,29 @@ int validateJSON(char * buffer) {
 	// 	return 0;
 	// }
 	// return 1;
+	/*													*/
+
+	// THIS PART IS REQUIRED IN ORDER TO PARSE THE CLIENT API'S REQUEST DUE TO ADDED BACKSLASHES
+	/*																						*/
+	string str(buffer);
+	str.erase(std::remove(str.begin(), str.end(), '\\'), str.end());
+	str.erase(0,1);
+	str.pop_back();
+
+	int n = sizeof(str);
+	char temp[n];
+	strcpy(temp, str.c_str());
+
+	if (document.Parse(temp).HasParseError()) {
+		cout << "Parse error" << endl;
+		return 0;
+	}
+	Value::ConstMemberIterator itr = document.FindMember("messageType");
+	if (itr == document.MemberEnd()) {
+		cout << "Cannot find message type" << endl;
+		return 0;
+	}
+	return 1;
 	/*																						*/
 	
 }
@@ -91,8 +91,8 @@ int validateJSON(char * buffer) {
 	This function is used to send the initial respones back to the client when they connect to the server
 */
 string connectResponse(Client *client) {
-	// const char * json = "{\"userID\":0,\"UDPPort\":0,\"statusCode\":200,\"response\":{\"docs\":[{\"eircode\":\"D02 YN32\"}]}}";
-	const char * json = "{\"statusCode\":200,\"userID\":0,\"UDPPort\":0}";
+	const char * json = "{\"userID\":0,\"UDPPort\":0,\"statusCode\":200,\"response\":{\"docs\":[{\"eircode\":\"D02 YN32\"}]}}";
+	// const char * json = "{\"statusCode\":200,\"userID\":0,\"UDPPort\":0}";
 	Document ClientInfo;
 	ClientInfo.Parse(json);
 	Value & id = ClientInfo["userID"];
