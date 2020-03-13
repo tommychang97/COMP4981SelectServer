@@ -91,11 +91,11 @@ int validateJSON(char * buffer) {
 	This function is used to send the initial respones back to the client when they connect to the server
 */
 string connectResponse(Client *client) {
-	const char * json = "{\"userID\":0,\"UDPPort\":0,\"statusCode\":200,\"response\":{\"docs\":[{\"eircode\":\"D02 YN32\"}]}}";
+	const char * json = "{\"userId\":0,\"UDPPort\":0,\"statusCode\":200,\"response\":{\"docs\":[{\"eircode\":\"D02 YN32\"}]}}";
 	// const char * json = "{\"statusCode\":200,\"userID\":0,\"UDPPort\":0}";
 	Document ClientInfo;
 	ClientInfo.Parse(json);
-	Value & id = ClientInfo["userID"];
+	Value & id = ClientInfo["userId"];
 	Value & port = ClientInfo["UDPPort"];
 	id.SetInt(client->getPlayer_Id());
 	port.SetInt(client->getUDPPort());
@@ -256,11 +256,11 @@ int main (int argc, char **argv)
 			} 
 			else {
                 // Ensure that the id is part of the request.
-                Value::ConstMemberIterator itr = document.FindMember("id");
+                Value::ConstMemberIterator itr = document.FindMember("userId");
 				if (itr == document.MemberEnd()) {
 					throw std::invalid_argument("bad json object");
 				}
-                int playerId = document["id"].GetInt();
+                int playerId = document["userId"].GetInt();
                 Client * clientObj = getClient(playerId);
                 if (clientObj == NULL) {
                     cout << "Couldn't retrieve client based on Id" << endl;
