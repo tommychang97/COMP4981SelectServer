@@ -64,8 +64,8 @@ string LobbyManager::getLobby(int id)
 	for (auto it = currentClientList.begin(); it != currentClientList.end(); it++)
 	{
 		// create a string of the client information in json format 
-		lobbyJSON += "{\"id\": \"" + to_string((*it)->getPlayer_Id()) + "\"," +
-			"\"class\":\"" + (*it)->getCharacterClass() + "\"," +
+		lobbyJSON += "{\"userId\": \"" + to_string((*it)->getPlayer_Id()) + "\"," +
+			"\"classType\":\"" + (*it)->getCharacterClass() + "\"," +
 			"\"ready\":\"" + (*it)->getStatus() + "\"," +
 			"\"username\":\"" + (*it)->getPlayer_name() + "\"," +
 			"\"team\":\"" + to_string((*it)->getTeam()) + "\"" +

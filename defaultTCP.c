@@ -89,12 +89,12 @@ int main (int argc, char **argv)
 	pptr = hp->h_addr_list;
 	printf("\t\tIP Address: %s\n", inet_ntop(hp->h_addrtype, *pptr, str, sizeof(str)));
 	//gets(sbuf); // get user's text
-	const char * connect = "{\"messageType\":\"connect\",\"username\": \"tommychang\"}";
-	const char * create = "{\"messageType\":\"lobbyRequest\",\"action\":0, \"id\":0}";
-	const char * getOne = "{\"messageType\":\"lobbyRequest\",\"action\":2, \"id\":0, \"lobbyId\":0}";
-	const char * join = "{\"messageType\":\"lobbyRequest\",\"action\":4, \"id\":0,\"lobbyId\":0 }";
-	const char * getAll = "{\"messageType\":\"lobbyRequest\",\"action\":3, \"id\":0}";
-	const char * leave = "{\"messageType\":\"lobbyRequest\",\"action\":5, \"id\":0, \"lobbyId\":1}";
+	const char * connect = "{\"messageType\":\"connect\",\"username\":\"tommychang\"}";
+	const char * create = "{\"messageType\":\"lobbyRequest\",\"action\":0,\"userId\":0}";
+	const char * getOne = "{\"messageType\":\"lobbyRequest\",\"action\":2,\"userId\":0, \"lobbyId\":0}";
+	const char * join = "{\"messageType\":\"lobbyRequest\",\"action\":4, \"userId\":0,\"lobbyId\":0}";
+	const char * getAll = "{\"messageType\":\"lobbyRequest\",\"action\":3,\"userId\":0}";
+	const char * leave = "{\"messageType\":\"lobbyRequest\",\"action\":5,\"userId\":0,\"lobbyId\":1}";
 
 
 	char buf1[1024];
@@ -102,6 +102,7 @@ int main (int argc, char **argv)
 	char buf3[1024];
 	char buf4[1024];
 	char buf5[1024];
+	char buf6[1024];
 	/* TEST CONNECTING */
 	// Transmit data through the socket
 	send (sd, connect, 1000, 0);
@@ -126,16 +127,16 @@ int main (int argc, char **argv)
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf2, 1000, 0);
-	printf ("%s\n", buf2);
+	n = recv (sd, buf3, 1000, 0);
+	printf ("%s\n", buf3);
 
 	send (sd, leave, BUFLEN, 0);
 	printf("Receive:\n");
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf5, 1000, 0);
-	printf ("%s\n", buf5);
+	n = recv (sd, buf4, 1000, 0);
+	printf ("%s\n", buf4);
 
 
 	send (sd, getOne, BUFLEN, 0);
@@ -143,16 +144,16 @@ int main (int argc, char **argv)
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf3, 1000, 0);
-	printf ("%s\n", buf3);
+	n = recv (sd, buf5, 1000, 0);
+	printf ("%s\n", buf5);
 
 	send (sd, getAll, BUFLEN, 0);
 	printf("Receive:\n");
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf4, 1000, 0);
-	printf ("%s\n", buf4);
+	n = recv (sd, buf6, 1000, 0);
+	printf ("%s\n", buf6);
 
 
 	// // /* TEST */
