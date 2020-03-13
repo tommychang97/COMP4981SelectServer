@@ -226,11 +226,14 @@ int main (int argc, char **argv)
             bp = buf;
             bytes_to_read = BUFLEN;
             n = recv (sockfd, buffer, bytes_to_read, 0);
-    		if (n < 0) {
-    			printf("didnt recieve anything, recv error\n");
-    		}
-        }
-		try {
+    		if (n == 0) { // connection closed by
+            printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
+            close(sockfd);
+            FD_CLR(sockfd, &allset);
+            client[i] = -1;
+        	}
+		else {
+			try {
 
             // Validate the JSON object received
 			if (!validateJSON(buffer)) {
@@ -385,24 +388,18 @@ int main (int argc, char **argv)
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
 				}
-            }
-		} catch (...) {
-			printf("Catching an exception");
-			string errorResponse = "{\"statusCode\":500}";
-			send(sockfd, errorResponse.c_str(), errorResponse.size(), 0);
-		}
-				
-        if (n == 0) // connection closed by client
-        {
-            printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
-            close(sockfd);
-            FD_CLR(sockfd, &allset);
-            client[i] = -1;
-        }
-                                                        
+           	}
+			} catch (...) {
+				printf("Catching an exception");
+				string errorResponse = "{\"statusCode\":500}";
+				send(sockfd, errorResponse.c_str(), errorResponse.size(), 0);
+			}
+		}                                            
         if (--nready <= 0)
-            break;        // no more readable descriptors
+            break;    
+			    // no more readable descriptors
         }
+		}
     }
 	return(0);
 }
