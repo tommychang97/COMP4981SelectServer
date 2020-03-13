@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 	pptr = hp->h_addr_list;
 	printf("\t\tIP Address: %s\n", inet_ntop(hp->h_addrtype, *pptr, str, sizeof(str)));
 	//gets(sbuf); // get user's text
-	const char * connect = "\"{\"messageType\":\"connect\",\"username\":\"tommychang\"}\"";
+	const char * connect = "\"{\\\"messageType\\\":\\\"connect\\\",\\\"username\\\":\\\"tommychang\\\"}\"";
 	const char * create = "\"{\"messageType\":\"lobbyRequest\",\"action\":0,\"userId\":\"0\"}\"";
 	const char * getOne = "\"{\"messageType\":\"lobbyRequest\",\"action\":2,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * join = "\"{\"messageType\":\"lobbyRequest\",\"action\":4,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";

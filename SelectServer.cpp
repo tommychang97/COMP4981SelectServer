@@ -30,8 +30,8 @@
 #define MAXLINE 4096
 #define  CREATE 0
 #define  DESTROY 1
-#define GET_ONE 2
-#define  GET_ALL 3
+#define  GET_ALL 2
+#define GET_ONE 3
 #define  JOIN 4
 #define  LEAVE 5
 
