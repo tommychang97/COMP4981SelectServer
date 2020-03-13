@@ -63,7 +63,9 @@ int validateJSON(char * buffer) {
 	/*													*/
 
 	// THIS PART IS REQUIRED IN ORDER TO PARSE THE CLIENT API'S REQUEST DUE TO ADDED BACKSLASHES
-	/*																						*/
+	/*				
+																			*/
+	printf("%s\n", buffer);
 	string str(buffer);
 	str.erase(std::remove(str.begin(), str.end(), '\\'), str.end());
 	str.erase(0,1);
@@ -260,7 +262,9 @@ int main (int argc, char **argv)
 				if (itr == document.MemberEnd()) {
 					throw std::invalid_argument("bad json object");
 				}
-                int playerId = document["userId"].GetInt();
+				string playerString = document["userId"].GetString();
+				int playerId = std::stoi(playerString);
+                // int playerId = document["userId"].GetInt();
                 Client * clientObj = getClient(playerId);
                 if (clientObj == NULL) {
                     cout << "Couldn't retrieve client based on Id" << endl;
@@ -306,7 +310,7 @@ int main (int argc, char **argv)
 							break;
 						case GET_ONE:
 							cout << "Received client request to get one!" << endl;
-							lobbyID = document["lobbyId"].GetInt();
+							lobbyID = std::stoi(document["lobbyId"].GetString());
 							lobbyResponse = lobbyManager->getLobby(lobbyID);
 								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
@@ -323,7 +327,7 @@ int main (int argc, char **argv)
 								if (itr == document.MemberEnd()) {
 									throw std::invalid_argument("bad json object");
 								}
-								lobbyID = document["lobbyId"].GetInt();
+								lobbyID = std::stoi(document["lobbyId"].GetString());
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
 								lobby->addClient(clientObj);
 								lobbyResponse = lobbyManager->getLobby(lobbyID);
@@ -337,7 +341,7 @@ int main (int argc, char **argv)
 								if (itr == document.MemberEnd()) {
 									throw std::invalid_argument("bad json object");
 								}
-								lobbyID = document["lobbyId"].GetInt();
+								lobbyID = std::stoi(document["lobbyId"].GetString());
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
 								lobby->removeClient(clientObj);
                                 lobbyResponse = lobbyManager->getLobby(lobbyID);
@@ -349,7 +353,7 @@ int main (int argc, char **argv)
 				}
 				else if (request == "switchUserSide") {
 					clientObj->getTeam() == 0? clientObj->setTeam(1) : clientObj->setTeam(0);
-					lobbyID = document["lobbyId"].GetInt();
+					lobbyID = std::stoi(document["lobbyId"].GetString());
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
@@ -360,7 +364,7 @@ int main (int argc, char **argv)
 						throw std::invalid_argument("bad json object");
 					}
 					clientObj->getStatus() == "true"? clientObj->setStatus("false") : clientObj->setStatus("true");
-					lobbyID = document["lobbyId"].GetInt();
+					lobbyID = std::stoi(document["lobbyId"].GetString());
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
@@ -376,7 +380,7 @@ int main (int argc, char **argv)
 					}
 					string newClass = document["classType"].GetString();
 					clientObj->setCharacterClass(newClass);
-					lobbyID = document["lobbyId"].GetInt();
+					lobbyID = std::stoi(document["lobbyId"].GetString());
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
