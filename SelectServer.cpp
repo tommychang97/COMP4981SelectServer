@@ -400,6 +400,7 @@ int main (int argc, char **argv)
 			    // no more readable descriptors
         }
 		}
+	memset(buffer, 0, BUFLEN);
     }
 	return(0);
 }
