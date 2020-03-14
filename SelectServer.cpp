@@ -241,7 +241,7 @@ int main (int argc, char **argv)
 			}
             // Check the message type, can either be connect or a lobby request
 			string request = document["messageType"].GetString();
-
+			cout << "Client Request: " << request << endl;
 			if (request == "connect") {
 				cout << "A new client has connected to the server!" << endl;
                 //  Create a new client, add it to the list, and return its id and UDP Port number.
@@ -272,18 +272,18 @@ int main (int argc, char **argv)
                     cout << "Couldn't retrieve client based on Id" << endl;
                     continue;
                 }
-			    itr = document.FindMember("action");
-				if (itr == document.MemberEnd()) {
-					throw std::invalid_argument("bad json object");
-				}
 				// Value::ConstMemberIterator itr = document.FindMember("lobbyId");
 				// 	if (itr == document.MemberEnd()) {
 				// 	throw std::invalid_argument("bad json object");
 				// }
-				int action = document["action"].GetInt();
 				int lobbyID;
 				string lobbyResponse;
 				if (request == "lobbyRequest") {	
+					itr = document.FindMember("action");
+					if (itr == document.MemberEnd()) {
+						throw std::invalid_argument("bad json object");
+					}
+					int action = document["action"].GetInt();
 					switch(action) {
 						case CREATE:
 							cout << "Received client request to create lobby!" << endl;
@@ -354,6 +354,7 @@ int main (int argc, char **argv)
 					}
 				}
 				else if (request == "switchUserSide") {
+					cout << "Received client request to switch teams!" << endl;
 					clientObj->getTeam() == 0? clientObj->setTeam(1) : clientObj->setTeam(0);
 					lobbyID = std::stoi(document["lobbyId"].GetString());
 					lobbyResponse = lobbyManager->getLobby(lobbyID);

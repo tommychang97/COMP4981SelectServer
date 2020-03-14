@@ -14,7 +14,8 @@
  *					  json format
  *   DESIGNER:        Ash Ketchum
  *   PROGRAMMER:      Nicole J & Chirag F
- *   REVISIONS:       NA
+ *   REVISIONS:       Tommy Chang 3/13/2020
+ * 						- changed lobbyId and userId to strings, and character class key
  */
 string LobbyManager::getLobbyList()
 {
@@ -65,7 +66,7 @@ string LobbyManager::getLobby(int id)
 	{
 		// create a string of the client information in json format 
 		lobbyJSON += "{\"userId\":\"" + to_string((*it)->getPlayer_Id()) + "\"," +
-			"\"class\":\"" + to_string((*it)->getCharacterClass()) + "\"," +
+			"\"classType\":\"" + to_string((*it)->getCharacterClass()) + "\"," +
 			"\"ready\":\"" + (*it)->getStatus() + "\"," +
 			"\"username\":\"" + (*it)->getPlayer_name() + "\"," +
 			"\"team\":\"" + to_string((*it)->getTeam()) + "\"" +
