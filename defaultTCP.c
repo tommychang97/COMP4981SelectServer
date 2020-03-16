@@ -1,29 +1,4 @@
-/*---------------------------------------------------------------------------------------
---	SOURCE FILE:		tcp_clnt.c - A simple TCP client program.
---
---	PROGRAM:		tclnt.exe
---
---	FUNCTIONS:		Berkeley Socket API
---
---	DATE:			February 2, 2008
---
---	REVISIONS:		(Date and Description)
---				January 2005
---				Modified the read loop to use fgets.
---				While loop is based on the buffer length 
---
---
---	DESIGNERS:		Aman Abdulla
---
---	PROGRAMMERS:		Aman Abdulla
---
---	NOTES:
---	The program will establish a TCP connection to a user specifed server.
--- The server can be specified using a fully qualified domain name or and
---	IP address. After the connection has been established the user will be
--- prompted for date. The date string is then sent to the server and the
--- response (echo) back from the server is displayed.
----------------------------------------------------------------------------------------*/
+
 #include <stdio.h>
 #include <netdb.h>
 #include <sys/types.h>
@@ -96,8 +71,8 @@ int main (int argc, char **argv)
 	const char * getAll = "\"{\"messageType\":\"lobbyRequest\",\"action\":2,\"userId\":\"0\"}\"";
 	const char * leave = "\"{\"messageType\":\"lobbyRequest\",\"action\":5,\"userId\":\"0\",\"lobbyId\":\"1\"}\"";
 	const char * switchTeam = "\"{\"messageType\":\"switchUserSide\",\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
-	const char * switchClass = "\"{\"messageType\":\"switchPlayerClass\",\"classType\":5,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
-	const char * switchStatus = "\"{\"messageType\":\"switchStatusReady\",\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
+	const char * switchClass = "\"{\"messageType\":\"switchPlayerClass\",\"classType\":5,\"userId\":\"0\"}\"";
+	const char * switchStatus = "\"{\"messageType\":\"switchStatusReady\",\"userId\":\"0\",\"ready\":\"true\"}\"";
 
 
 
@@ -134,29 +109,29 @@ int main (int argc, char **argv)
 	n = recv (sd, buf3, 1000, 0);
 	printf ("%s\n", buf3);
 
-	// send (sd, getAll, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, buf4,1000, 0);
-	// printf ("%s\n", buf4);
+	// // send (sd, getAll, BUFLEN, 0);
+	// // printf("Receive:\n");
+	// // bp = rbuf;
+	// // bytes_to_read = BUFLEN;
+	// // // client makes repeated calls to recv until no more data is expected to arrive.
+	// // n = recv (sd, buf4,1000, 0);
+	// // printf ("%s\n", buf4);
 
 	send (sd, switchClass, BUFLEN, 0);
 	printf("Receive:\n");
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf3, 1000, 0);
-	printf ("%s\n", buf3);
+	n = recv (sd, buf4, 1000, 0);
+	printf ("%s\n", buf4);
 
 	send (sd, switchStatus, BUFLEN, 0);
 	printf("Receive:\n");
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf4, 1000, 0);
-	printf ("%s\n", buf4);
+	n = recv (sd, buf5, 1000, 0);
+	printf ("%s\n", buf5);
 
 
 	// send (sd, getOne, BUFLEN, 0);

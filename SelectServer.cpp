@@ -362,28 +362,20 @@ int main (int argc, char **argv)
 						cout << "Failed to send!" << endl;
 				}
 				else if (request == "switchStatusReady") {
-					Value::ConstMemberIterator itr = document.FindMember("lobbyId");
-					if (itr == document.MemberEnd()) {
-						throw std::invalid_argument("bad json object");
-					}
 					clientObj->getStatus() == "true"? clientObj->setStatus("false") : clientObj->setStatus("true");
-					lobbyID = std::stoi(document["lobbyId"].GetString());
+					lobbyID = clientObj->getLobby_Id();
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
 				}
 				else if (request == "switchPlayerClass") {
-					Value::ConstMemberIterator itr = document.FindMember("lobbyId");
-					if (itr == document.MemberEnd()) {
-						throw std::invalid_argument("bad json object");
-					}
 					itr = document.FindMember("classType");
 					if (itr == document.MemberEnd()) {
 						throw std::invalid_argument("bad json object");
 					}
 					int newClass = document["classType"].GetInt();
 					clientObj->setCharacterClass(newClass);
-					lobbyID = std::stoi(document["lobbyId"].GetString());
+					lobbyID = clientObj->getLobby_Id();
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
