@@ -362,6 +362,7 @@ int main (int argc, char **argv)
 						cout << "Failed to send!" << endl;
 				}
 				else if (request == "switchStatusReady") {
+					cout << "Received client request to switch status!" << endl;
 					clientObj->getStatus() == "true"? clientObj->setStatus("false") : clientObj->setStatus("true");
 					lobbyID = clientObj->getLobby_Id();
 					lobbyResponse = lobbyManager->getLobby(lobbyID);

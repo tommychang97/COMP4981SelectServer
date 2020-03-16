@@ -1,9 +1,10 @@
 #include "Lobby.hpp"
+#include <iostream>
 
-int Lobby::lobbyID = 0;
+int Lobby::lobbyID = -1;
 
 Lobby::Lobby(int lobbyOwner) {
-    this->id = lobbyID++;
+    this->id = ++lobbyID;
     this->lobbyOwner = lobbyOwner;
     this->status = "inactive";
 }
@@ -84,4 +85,10 @@ void Lobby::removeAllClients()
         (*iter)->setLobby_Id(-1);
     clientList.clear();
     this->currentPlayers = 0;
+}
+
+void Lobby::printInfo() {
+    cout << "current players:" << currentPlayers << endl;
+    cout << "status:" << currentPlayers << endl;
+    cout << "lobbyOwner:" << currentPlayers << endl;
 }

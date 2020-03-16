@@ -18,6 +18,7 @@ class Lobby {
         void addClient(Client* client);
         void removeClient(Client *client);
         void removeAllClients();
+        void printInfo();
 
     private:
         int id;

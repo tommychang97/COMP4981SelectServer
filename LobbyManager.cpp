@@ -7,6 +7,7 @@
  *						- getlobyList() &getLobby() functionality implemented
  */
 #include "LobbyManager.hpp"
+#include <iostream>
 
 /*
  *   NAME:            getLobbyList()
@@ -58,8 +59,12 @@ string LobbyManager::getLobby(int id)
 	// Start of "Players" key of player array
 	lobbyJSON += ",\"Players\":[";
 
+	Lobby * currentLobby = getLobbyObject(id);
+
+	cout << "num lobbes: " << numLobbies << endl;
+	cout << "getting lobby id: " << id << endl;
 	// Make a copy of the current client list
-	vector<Client*> currentClientList = lobbyList[id]->getClientList();
+	vector<Client*> currentClientList = currentLobby->getClientList();
 
 	// Iterate through the client list
 	for (auto it = currentClientList.begin(); it != currentClientList.end(); it++)
@@ -80,19 +85,18 @@ string LobbyManager::getLobby(int id)
 	// End of the player list array
 	lobbyJSON += "],";
 
-	int lobbyOwner = lobbyList[id]->getLobbyOwner();
+	int lobbyOwner = currentLobby->getLobbyOwner();
 	string ownerName;
-	vector<Client*> clientList = lobbyList[id]->getClientList();
 
-	for (auto it = clientList.begin(); it != clientList.end(); it++) {
+	for (auto it = currentClientList.begin(); it != currentClientList.end(); it++) {
 		if ((*it)->getPlayer_Id() == lobbyOwner) {
 			ownerName = (*it)->getPlayer_name();
 			break;
 		} 
 	}
 	// Rest of the lobby information
-	lobbyJSON += "\"lobbyId\":\"" + to_string(lobbyList[id]->getId()) + "\"," +
-		"\"lobbyStatus\":\"" + lobbyList[id]->getStatus() + "\"," +
+	lobbyJSON += "\"lobbyId\":\"" + to_string(currentLobby->getId()) + "\"," +
+		"\"lobbyStatus\":\"" + currentLobby->getStatus() + "\"," +
 		"\"lobbyOwnerName\":\"" + ownerName + "\"" + ",\"lobbyOwnerId\":\"" + to_string(lobbyOwner) + "\"" + ",\"numPlayers\":\"" + to_string(lobbyList[id]->getCurrentPlayers()) + "\"" +
 		"}";
 
@@ -132,6 +136,7 @@ int LobbyManager::createLobby(Client *client)
 	lobby->addClient(client);
 	client->setLobby_Id(lobby->getId());
 	lobbyList.push_back(lobby);
+	numLobbies++;
 	return lobby->getId();
 }
 
@@ -144,7 +149,6 @@ int LobbyManager::createLobby(Client *client)
  */
 Lobby *LobbyManager::getLobbyObject(int id)
 {
-	
 	for (auto it = lobbyList.begin(); it != lobbyList.end(); it++)
 	{
 		if ((*it)->getId() == id)

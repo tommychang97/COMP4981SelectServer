@@ -12,4 +12,5 @@ class LobbyManager {
         int verifyLobbyOwner(Client* client);
     private:
         std::vector<Lobby*>lobbyList;
+        int numLobbies = 0;
 };
