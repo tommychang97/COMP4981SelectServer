@@ -19,6 +19,8 @@ class Client {
         int getUDPPort();
         void setLobby_Id(int lobbyID);
         int getLobby_Id();
+        void setLoadingStatus(string newStatus);
+        string getLoadingStatus();
         
     private:
         string player_name;
@@ -30,4 +32,5 @@ class Client {
         int UDPPort;
         int IP;
         int lobby_id;
+        string loadingStatus;
 };

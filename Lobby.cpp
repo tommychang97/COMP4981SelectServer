@@ -72,6 +72,7 @@ void Lobby::removeClient(Client *client)
     client->setCharacterClass(0);
     client->setLobby_Id(-1);
     client->setTeam(0);
+    client->setStatus("false");
     currentPlayers--;
     if (currentPlayers == 0) {
         this->setLobbyOwner(-1);
@@ -91,4 +92,21 @@ void Lobby::printInfo() {
     cout << "current players:" << currentPlayers << endl;
     cout << "status:" << currentPlayers << endl;
     cout << "lobbyOwner:" << currentPlayers << endl;
+}
+
+bool Lobby::getLobbyReady() {
+    for (auto it = clientList.begin(); it != clientList.end(); it++) {
+        if ((*it)->getStatus() == "false") {
+            return false;
+        }
+    }
+    return true;
+}
+bool Lobby::getLoadingReady() {
+    for (auto it = clientList.begin(); it != clientList.end(); it++) {
+        if ((*it)->getLoadingStatus() == "false") {
+            return false;
+        }
+    }
+    return true;
 }

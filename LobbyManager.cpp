@@ -25,6 +25,7 @@ string LobbyManager::getLobbyList()
 	lobbyListJSON += ",\"Lobbies\":[";
 
 	// Iterate through the lobby list and resturn a string in json format
+	
 	for (auto it = lobbyList.begin(); it != lobbyList.end(); it++)
 	{
 		lobbyListJSON += "{\"lobbyId\":\"" + to_string((*it)->getId()) + "\","+ "\"lobbyStatus\":\"" + (*it)->getStatus() + "\"," +
@@ -48,11 +49,15 @@ string LobbyManager::getLobbyList()
  *   DESIGNER:        Ash Ketchum
  *   PROGRAMMER:      Nicole J & Chirag F
  *   REVISIONS:       Nicole J (March 11, 2020):
- *						- Fixed bug with the string in formatter in the loop 											
+ *						- Fixed bug with the string in formatter in the loop 	
+ *					  Tommy Chang (March 19, 2020)
+ *						- adding allPlayersReady field										
  */
 
 string LobbyManager::getLobby(int id)
 {
+	string allPlayersReady;
+
 	// Start the json string
 	string lobbyJSON = "{\"statusCode\":200";
 
@@ -61,8 +66,6 @@ string LobbyManager::getLobby(int id)
 
 	Lobby * currentLobby = getLobbyObject(id);
 
-	cout << "num lobbes: " << numLobbies << endl;
-	cout << "getting lobby id: " << id << endl;
 	// Make a copy of the current client list
 	vector<Client*> currentClientList = currentLobby->getClientList();
 
@@ -94,10 +97,11 @@ string LobbyManager::getLobby(int id)
 			break;
 		} 
 	}
+	allPlayersReady = currentLobby->getLobbyReady()? "true" : "false";
 	// Rest of the lobby information
-	lobbyJSON += "\"lobbyId\":\"" + to_string(currentLobby->getId()) + "\"," +
+	lobbyJSON += "\"lobbyId\":\"" + to_string(currentLobby->getId()) + "\"," + 
 		"\"lobbyStatus\":\"" + currentLobby->getStatus() + "\"," +
-		"\"lobbyOwnerName\":\"" + ownerName + "\"" + ",\"lobbyOwnerId\":\"" + to_string(lobbyOwner) + "\"" + ",\"numPlayers\":\"" + to_string(lobbyList[id]->getCurrentPlayers()) + "\"" +
+		"\"allPlayersReady\":\"" + allPlayersReady + "\"," + "\"lobbyOwnerName\":\"" + ownerName + "\"" + ",\"lobbyOwnerId\":\"" + to_string(lobbyOwner) + "\"" + ",\"numPlayers\":\"" + to_string(lobbyList[id]->getCurrentPlayers()) + "\"" +
 		"}";
 
 	return lobbyJSON;
@@ -117,13 +121,8 @@ void LobbyManager::deleteLobby(int lobbyId)
 	{
 		if ((*it)->getId() == lobbyId)
 		{
-			int numPlayers = (*it)->getCurrentPlayers();
-			vector<Client*> list = (*it)->getClientList();
-			for (int i = 0; i < numPlayers; i++)
-			{
-				list[i]->setLobby_Id(-1);
-			}
 			lobbyList.erase(it);
+			free(*it);
 			break;
 		}
 	}

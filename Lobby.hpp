@@ -19,6 +19,8 @@ class Lobby {
         void removeClient(Client *client);
         void removeAllClients();
         void printInfo();
+        bool getLobbyReady();
+        bool getLoadingReady();
 
     private:
         int id;

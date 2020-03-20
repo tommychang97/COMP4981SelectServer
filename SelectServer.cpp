@@ -89,7 +89,41 @@ int validateJSON(char * buffer) {
 	
 }
 
-/*
+void broadcastStartGame(Lobby * lobby) {
+	string startLobbyResponse = "{\"statusCode\":200,\"lobbyID\":";
+	startLobbyResponse = startLobbyResponse + to_string(lobby->getId()) + "," + "\"startGame\"" + ":\"true\"}";
+
+	vector<Client*> clientList = lobby->getClientList();
+	for (auto it = clientList.begin(); it != clientList.end(); it++) {
+		cout << "sent start game!" << endl;
+		send((*it)->getTCPSocket(), startLobbyResponse.c_str(),startLobbyResponse.size(), 0);
+	}
+}
+void broadcastStartLobby(Lobby * lobby) {
+	cout << "Broadcasting start lobby!" << endl;
+	const char * gameObject = "{\"Player\":{\"playerName\":\"tempPlayer\",\"id\":-1,\"classType\":-1,\"ready\":\"false\",\"team\":-1},\"players\":[],\"crystals\":[],\"attackObject\":[],\"gameState\":1}";
+	Document ClientInfo;
+	ClientInfo.Parse(gameObject);
+	vector<Client*> clientList = lobby->getClientList();
+	for (auto it = clientList.begin(); it != clientList.end(); it++) {
+		Value & clientUsername = ClientInfo["Player"]["playerName"];
+		Value & clientID = ClientInfo["Player"]["id"];
+		Value & clientClass = ClientInfo["Player"]["classType"];
+		Value & clientReady = ClientInfo["Player"]["ready"];
+		Value & clientTeam = ClientInfo["Player"]["team"];
+		clientUsername.SetString((*it)->getPlayer_name().c_str(),ClientInfo.GetAllocator());
+		clientID.SetInt((*it)->getPlayer_Id());
+		clientClass.SetInt((*it)->getCharacterClass());
+		clientReady.SetString((*it)->getStatus().c_str(), ClientInfo.GetAllocator());
+		clientTeam.SetInt((*it)->getTeam());
+		StringBuffer buffer;
+		Writer<StringBuffer> writer(buffer);
+		ClientInfo.Accept(writer);
+		string response = buffer.GetString();
+		send((*it)->getTCPSocket(), response.c_str(), response.size(), 0);
+	}
+}
+/*["Player"]["playerName"]
 	This function is used to send the initial respones back to the client when they connect to the server
 */
 string connectResponse(Client *client) {
@@ -331,6 +365,9 @@ int main (int argc, char **argv)
 								}
 								lobbyID = std::stoi(document["lobbyId"].GetString());
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+								if (lobby->getStatus() != "inactive") {
+									throw std::invalid_argument("lobby is currently active");
+								}
 								lobby->addClient(clientObj);
 								lobbyResponse = lobbyManager->getLobby(lobbyID);
 								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
@@ -346,9 +383,12 @@ int main (int argc, char **argv)
 								lobbyID = std::stoi(document["lobbyId"].GetString());
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
 								lobby->removeClient(clientObj);
-                                lobbyResponse = lobbyManager->getLobby(lobbyID);
-								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
-					            cout << "Failed to send!" << endl;
+								if (lobby->getCurrentPlayers() == 0) {
+									lobbyManager->deleteLobby(lobbyID);
+								}
+                                // lobbyResponse = lobbyManager->getLobby(lobbyID);
+								// if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
+					            // cout << "Failed to send!" << endl;
 							}
 							break;
 					}
@@ -380,6 +420,30 @@ int main (int argc, char **argv)
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
 					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 						cout << "Failed to send!" << endl;
+				}
+				else if (request == "startGame") {
+					// check if request is made by the host
+					itr = document.FindMember("lobbyId");
+					if (itr == document.MemberEnd()) {
+						throw std::invalid_argument("bad json object");
+					}
+					lobbyID = std::stoi(document["lobbyId"].GetString());
+					Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+					if (clientObj->getPlayer_Id() == lobby->getLobbyOwner() && lobby->getLobbyReady()) {
+						lobby->setStatus("active");
+						broadcastStartLobby(lobby);
+						// send response to all clients to load the game
+					}
+					
+				}
+				else if (request == "playerReady") {
+					clientObj->setLoadingStatus("true");
+					// change the status of player 
+					Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+					if (lobby->getLoadingReady()) {
+						broadcastStartGame(lobby);
+						// send response to all clients to start the game
+					}
 				}
            	}
 			} catch (...) {

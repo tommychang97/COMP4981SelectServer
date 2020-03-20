@@ -1,9 +1,12 @@
 CC=g++ -Wall -lpthread
 
-all: Server Client
+all: Server Client Client2
 
 Client: defaultTCP.o 
 	$(CC) -o Client defaultTCP.o
+
+Client2: defaultTCP2.o
+	$(CC) -o Client2 defaultTCP2.o
 
 Server: SelectServer.o ConnectivityManager.o LobbyManager.o Lobby.o Client.o
 	$(CC) -o  Server SelectServer.o ConnectivityManager.o LobbyManager.o Lobby.o Client.o
@@ -16,6 +19,8 @@ clean:
 
 defaultTCP.o:
 	$(CC) -c defaultTCP.c
+defaultTCP2.o:
+	$(CC) -c defaultTCP2.c
 SelectServer.o:
 	$(CC) -c SelectServer.cpp
 ConnectivityManager.o:

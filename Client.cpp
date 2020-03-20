@@ -4,12 +4,13 @@ int Client::playerID = 0;
 Client::Client(int characterClass, int team, int socket, int UDPPort, int IP){
     this->player_id = playerID++;
     this->characterClass = characterClass;
-    this->status = false;
+    this->status = "false";
     this->team = team;
     this->TCPSocket = socket;
     this->UDPPort = UDPPort;
     this->IP = IP;
     this->lobby_id = -1;
+    this->loadingStatus = "false";
 }
 void Client::setLobby_Id(int lobbyID) {
     this->lobby_id = lobbyID;
@@ -78,4 +79,14 @@ int Client::getTeam()
 void Client::setTeam(int team)
 {
     this->team = team;
+}
+
+void Client::setLoadingStatus(string newStatus)
+{
+    this->loadingStatus = newStatus;
+}
+
+string Client::getLoadingStatus()
+{
+    return this->loadingStatus;
 }
