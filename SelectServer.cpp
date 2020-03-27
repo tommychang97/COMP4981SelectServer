@@ -101,7 +101,7 @@ void broadcastStartGame(Lobby * lobby) {
 }
 void broadcastStartLobby(Lobby * lobby) {
 	cout << "Broadcasting start lobby!" << endl;
-	const char * gameObject = "{\"Player\":{\"playerName\":\"tempPlayer\",\"id\":-1,\"classType\":-1,\"ready\":\"false\",\"team\":-1},\"players\":[],\"crystals\":[],\"attackObject\":[],\"gameState\":1}";
+	const char * gameObject = "{\"statusCode\":200,\"Player\":{\"playerName\":\"tempPlayer\",\"id\":-1,\"classType\":-1,\"ready\":\"false\",\"team\":-1},\"players\":[],\"crystals\":[],\"attackObject\":[],\"gameState\":1}";
 	Document ClientInfo;
 	ClientInfo.Parse(gameObject);
 	vector<Client*> clientList = lobby->getClientList();
