@@ -59,7 +59,7 @@ string LobbyManager::getLobby(int id)
 	string allPlayersReady;
 
 	// Start the json string
-	string lobbyJSON = "{\"statusCode\":200";
+	string lobbyJSON = "{\"statusCode\":200, \"responseType\":\"modify\"";
 
 	// Start of "Players" key of player array
 	lobbyJSON += ",\"Players\":[";
