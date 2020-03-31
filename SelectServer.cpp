@@ -90,7 +90,7 @@ int validateJSON(char * buffer) {
 }
 
 void broadcastStartGame(Lobby * lobby) {
-	string startLobbyResponse = "{\"statusCode\":200,\"lobbyID\":";
+	string startLobbyResponse = "{\"statusCode\":200,\"responseType\":\"start\",\"lobbyID\":";
 	startLobbyResponse = startLobbyResponse + to_string(lobby->getId()) + "," + "\"startGame\"" + ":\"true\"}";
 
 	vector<Client*> clientList = lobby->getClientList();
@@ -101,7 +101,7 @@ void broadcastStartGame(Lobby * lobby) {
 }
 void broadcastStartLobby(Lobby * lobby) {
 	cout << "Broadcasting start lobby!" << endl;
-	const char * gameObject = "{\"statusCode\":200,\"Player\":{\"playerName\":\"tempPlayer\",\"id\":-1,\"classType\":-1,\"ready\":\"false\",\"team\":-1},\"players\":[],\"crystals\":[],\"attackObject\":[],\"gameState\":1}";
+	const char * gameObject = "{\"statusCode\":200,\"responseType\":\"load\",\"Player\":{\"playerName\":\"tempPlayer\",\"id\":-1,\"classType\":-1,\"ready\":\"false\",\"team\":-1},\"players\":[],\"crystals\":[],\"attackObject\":[],\"gameState\":1}";
 	Document ClientInfo;
 	ClientInfo.Parse(gameObject);
 	vector<Client*> clientList = lobby->getClientList();
