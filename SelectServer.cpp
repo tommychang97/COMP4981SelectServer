@@ -121,6 +121,7 @@ void broadcastStartLobby(Lobby * lobby) {
 		ClientInfo.Accept(writer);
 		string response = buffer.GetString();
 		send((*it)->getTCPSocket(), response.c_str(), response.size(), 0);
+		cout << "broadcasted start lobby once" << endl;
 	}
 }
 /*["Player"]["playerName"]
@@ -162,6 +163,19 @@ Client * getClient(int playerId) {
     }
     return NULL;
 }
+
+void broadcastLobbyUpdate(Lobby * lobby) {
+	vector<Client*>clientsInLobby = lobby->getClientList();
+	string response = lobbyManager->getLobby(lobby->getId());
+	int sent = 0;
+	for (auto it = clientsInLobby.begin(); it != clientsInLobby.end(); it++) {
+		sent = sendResponse((*it)->getTCPSocket(), response);
+		if (sent == 0) {
+			cout << "Failed to send!";
+		}
+	}
+}
+
 
 /*
 	Start of the program.
@@ -320,12 +334,16 @@ int main (int argc, char **argv)
 					int action = document["action"].GetInt();
 					switch(action) {
 						case CREATE:
+							{
 							cout << "Received client request to create lobby!" << endl;
 							//create lobby, send lobby back
 							lobbyID = lobbyManager->createLobby(clientObj);
-							lobbyResponse = lobbyManager->getLobby(lobbyID);
-							if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
-					            cout << "Failed to send!" << endl;
+							// lobbyResponse = lobbyManager->getLobby(lobbyID);
+							// if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
+					        //     cout << "Failed to send!" << endl;
+							Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+							broadcastLobbyUpdate(lobby);
+							}
 							break;
 						case DESTROY:
 							{
@@ -370,8 +388,7 @@ int main (int argc, char **argv)
 								}
 								lobby->addClient(clientObj);
 								lobbyResponse = lobbyManager->getLobby(lobbyID);
-								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
-					            cout << "Failed to send!" << endl;
+								broadcastLobbyUpdate(lobby);
 							}
 							break;
 						case LEAVE:
@@ -386,6 +403,9 @@ int main (int argc, char **argv)
 								if (lobby->getCurrentPlayers() == 0) {
 									lobbyManager->deleteLobby(lobbyID);
 								}
+								else {
+									broadcastLobbyUpdate(lobby);
+								}
                                 // lobbyResponse = lobbyManager->getLobby(lobbyID);
 								// if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
 					            // cout << "Failed to send!" << endl;
@@ -398,16 +418,16 @@ int main (int argc, char **argv)
 					clientObj->getTeam() == 0? clientObj->setTeam(1) : clientObj->setTeam(0);
 					lobbyID = std::stoi(document["lobbyId"].GetString());
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
-					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
-						cout << "Failed to send!" << endl;
+					Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+					broadcastLobbyUpdate(lobby);
 				}
 				else if (request == "switchStatusReady") {
 					cout << "Received client request to switch status!" << endl;
 					clientObj->getStatus() == "true"? clientObj->setStatus("false") : clientObj->setStatus("true");
 					lobbyID = clientObj->getLobby_Id();
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
-					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
-						cout << "Failed to send!" << endl;
+					Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+					broadcastLobbyUpdate(lobby);
 				}
 				else if (request == "switchPlayerClass") {
 					itr = document.FindMember("classType");
@@ -418,8 +438,8 @@ int main (int argc, char **argv)
 					clientObj->setCharacterClass(newClass);
 					lobbyID = clientObj->getLobby_Id();
 					lobbyResponse = lobbyManager->getLobby(lobbyID);
-					if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
-						cout << "Failed to send!" << endl;
+					Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+					broadcastLobbyUpdate(lobby);
 				}
 				else if (request == "startGame") {
 					// check if request is made by the host
@@ -433,6 +453,9 @@ int main (int argc, char **argv)
 						lobby->setStatus("active");
 						broadcastStartLobby(lobby);
 						// send response to all clients to load the game
+					}
+					else {
+							throw std::invalid_argument("Not all players ready");
 					}
 					
 				}

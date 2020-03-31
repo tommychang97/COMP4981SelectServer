@@ -113,7 +113,15 @@ int main (int argc, char **argv)
 	n = recv (sd, buf3, 1000, 0);
 	printf ("%s\n", buf3);
 
-	sleep(10);
+	// send (sd, switchClass, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf6, 1000, 0);
+	// printf ("%s\n", buf6);
+
+	sleep(5);
 	send (sd, startLobby, BUFLEN, 0);
 	printf("Receive:\n");
 	bp = rbuf;
@@ -122,6 +130,7 @@ int main (int argc, char **argv)
 	n = recv (sd, buf4,1000, 0);
 	printf ("%s\n", buf4);
 
+
 	send (sd, playerReady, BUFLEN, 0);
 	printf("Receive:\n");
 	bp = rbuf;
@@ -129,71 +138,7 @@ int main (int argc, char **argv)
 	// client makes repeated calls to recv until no more data is expected to arrive.
 	n = recv (sd, buf5, 1000, 0);
 	printf ("%s\n", buf5);
-
-	// send (sd, switchStatus, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, buf5, 1000, 0);
-	// printf ("%s\n", buf5);
-
-
-	// send (sd, getOne, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, buf5, 1000, 0);
-	// printf ("%s\n", buf5);
-
-	// send (sd, getAll, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, buf6, 1000, 0);
-	// printf ("%s\n", buf6);
-
-
-	// // /* TEST */
-	// send (sd, getOne, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, rbuf, 1000, 0);
-	// printf ("%s\n", rbuf);
-
-	// char newbuf5[1024];
-	// send (sd, leave, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, newbuf5, 1000, 0);
-	// printf ("%s\n", newbuf5);
-
-
-	// /* TEST GETALL LOBBY */
-	// char newbuf[1024];
-	// send (sd, newBuf3, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// // client makes repeated calls to recv until no more data is expected to arrive.
-	// n = recv (sd, newbuf, 1000, 0);
-	// printf ("%s\n", newbuf);
-
-	// /* TEST DESTROY LOBBY*/
-	// char tmpbuf[1024];
-	// send (sd, destBuf, BUFLEN, 0);
-	// printf("Receive:\n");
-	// bp = rbuf;
-	// bytes_to_read = BUFLEN;
-	// n = recv(sd, tmpbuf, 1000, 0);
-	// printf ("%s\n", tmpbuf);
-	fflush(stdout);
+	
 	close (sd);
 	return (0);
 }
