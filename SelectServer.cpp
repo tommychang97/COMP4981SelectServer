@@ -388,6 +388,10 @@ int main (int argc, char **argv)
 								}
 								lobby->addClient(clientObj);
 								lobbyResponse = lobbyManager->getLobby(lobbyID);
+								string joinResponse = "{\"statusCode\":200}";
+								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0) {
+					            	cout << "Failed to send!" << endl;
+								}
 								broadcastLobbyUpdate(lobby);
 							}
 							break;
