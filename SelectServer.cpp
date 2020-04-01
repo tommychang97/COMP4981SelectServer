@@ -342,7 +342,9 @@ int main (int argc, char **argv)
 							// if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
 					        //     cout << "Failed to send!" << endl;
 							Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
-							broadcastLobbyUpdate(lobby);
+							lobbyResponse = lobbyManager->getLobby(lobbyID);
+							if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
+					            cout << "Failed to send!" << endl;
 							}
 							break;
 						case DESTROY:
