@@ -474,6 +474,21 @@ int main (int argc, char **argv)
 						// send response to all clients to start the game
 					}
 				}
+				else if (request == "requestDisconnect") {
+					lobbyID = clientObj->getLobby_Id();
+					Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
+					lobby->removeClient(clientObj);
+					if (lobby->getCurrentPlayers() == 0) {
+						lobbyManager->deleteLobby(lobbyID);
+					}
+					else {
+						broadcastLobbyUpdate(lobby);
+					}
+					string disconnectResponse = "{\"statusCode\":200,\"disconnected\":true}";
+					send(sockfd, disconnectResponse.c_str(), disconnectResponse.size(), 0);
+					delete(clientObj);
+					close(sockfd);
+				}
            	}
 			} catch (...) {
 				printf("Catching an exception");

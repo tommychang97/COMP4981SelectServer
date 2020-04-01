@@ -116,7 +116,6 @@ string LobbyManager::getLobby(int id)
  */
 void LobbyManager::deleteLobby(int lobbyId)
 {
-
 	for (auto it = lobbyList.begin(); it != lobbyList.end(); it++)
 	{
 		if ((*it)->getId() == lobbyId)
