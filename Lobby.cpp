@@ -11,7 +11,7 @@ Lobby::Lobby(int lobbyOwner) {
 
 int Lobby::getCurrentPlayers() 
 {
-    return this->currentPlayers;
+    return clientList.size();
 }
 
 string Lobby::getStatus()
@@ -63,8 +63,11 @@ void Lobby::addClient(Client * client) {
 
 void Lobby::removeClient(Client *client)
 {
+    cout << "in remove client" << endl;
+    cout << this->clientList.size() << endl;
     for (auto it = clientList.begin(); it != clientList.end(); it++) {
         if ((*it)->getPlayer_Id() == client->getPlayer_Id()) {
+            cout << "found client to remove" << endl;
             clientList.erase(it);
             break;
         }

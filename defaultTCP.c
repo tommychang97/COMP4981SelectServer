@@ -9,6 +9,7 @@
 #include <strings.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 
 #define SERVER_TCP_PORT		7000	// Default port
 #define BUFLEN			1024  	// Buffer length
@@ -69,14 +70,22 @@ int main (int argc, char **argv)
 	const char * getOne = "\"{\"messageType\":\"lobbyRequest\",\"action\":3,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * join = "\"{\"messageType\":\"lobbyRequest\",\"action\":4,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * getAll = "\"{\"messageType\":\"lobbyRequest\",\"action\":2,\"userId\":\"0\"}\"";
-	const char * leave = "\"{\"messageType\":\"lobbyRequest\",\"action\":5,\"userId\":\"0\",\"lobbyId\":\"1\"}\"";
+	const char * leave = "\"{\"messageType\":\"lobbyRequest\",\"action\":5,\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * switchTeam = "\"{\"messageType\":\"switchUserSide\",\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * switchClass = "\"{\"messageType\":\"switchPlayerClass\",\"classType\":5,\"userId\":\"0\"}\"";
 	const char * switchStatus = "\"{\"messageType\":\"switchStatusReady\",\"userId\":\"0\",\"ready\":true}\"";
 	const char * startLobby = "\"{\"messageType\":\"startGame\",\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 	const char * playerReady = "\"{\"messageType\":\"playerReady\",\"userId\":\"0\",\"lobbyId\":\"0\"}\"";
 
-
+	char test[500] = "\"{\"277\":{\"id\":277,\"parentID\":0,\"team\":0,\"type\":0,\"state\":0,\"health\":0,\"position\":{\"x\":8.1,\"y\":17.58,\"z\":0.0},\"direction\":{\"x\":0.0,\"y\":0.0,\"z\":0.0";
+	char test2 [30000];
+	// for (int i = 0; i < 152; i++) {
+	// 	strcat(test2, ",");
+	// 	strcat(test2, test);
+	// }
+	strcat(test, "}}}\"");
+	
+	
 
 
 	char buf1[1024];
@@ -85,10 +94,9 @@ int main (int argc, char **argv)
 	char buf4[1024];
 	char buf5[1024];
 	char buf6[1024];
-	printf("%s\n", "lol");
 	/* TEST CONNECTING */
 	// Transmit data through the socket
-	send (sd, connect, 1000, 0);
+	send (sd, test, 1000, 0);
 	printf("Receive:\n");
 	bp = rbuf;
 	bytes_to_read = BUFLEN;
@@ -96,24 +104,26 @@ int main (int argc, char **argv)
 	n = recv (sd, buf1, 1000, 0);
 	printf ("%s\n", buf1);
 
-	/* TEST CREATING LOBBY */
-	send (sd, create, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf2, 1000, 0);
-	printf ("%s\n", buf2);
+	// /* TEST CREATING LOBBY */
+	// send (sd, create, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf2, 1000, 0);
+	// printf ("%s\n", buf2);
 
-	send (sd, switchStatus, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
+	// send (sd, leave, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
 	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf3, 1000, 0);
-	printf ("%s\n", buf3);
+	// n = recv (sd, buf3, 1000, 0);
+	// printf ("%s\n", buf3);
 
-	// send (sd, switchClass, BUFLEN, 0);
+	// sleep(5);
+
+	// send (sd, create, BUFLEN, 0);
 	// printf("Receive:\n");
 	// bp = rbuf;
 	// bytes_to_read = BUFLEN;
@@ -121,23 +131,23 @@ int main (int argc, char **argv)
 	// n = recv (sd, buf6, 1000, 0);
 	// printf ("%s\n", buf6);
 
-	sleep(5);
-	send (sd, startLobby, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf4,1000, 0);
-	printf ("%s\n", buf4);
+	// sleep(5);
+	// send (sd, startLobby, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf4,1000, 0);
+	// printf ("%s\n", buf4);
 
 
-	send (sd, playerReady, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-	// client makes repeated calls to recv until no more data is expected to arrive.
-	n = recv (sd, buf5, 1000, 0);
-	printf ("%s\n", buf5);
+	// send (sd, playerReady, BUFLEN, 0);
+	// printf("Receive:\n");
+	// bp = rbuf;
+	// bytes_to_read = BUFLEN;
+	// // client makes repeated calls to recv until no more data is expected to arrive.
+	// n = recv (sd, buf5, 1000, 0);
+	// printf ("%s\n", buf5);
 	
 	close (sd);
 	return (0);

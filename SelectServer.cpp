@@ -24,7 +24,7 @@
 #include <array>
 
 #define SERVER_TCP_PORT 7000	// Default port
-#define BUFLEN	8096	//Buffer length
+#define BUFLEN	65000	//Buffer length
 #define TRUE	1
 #define LISTENQ	5
 #define MAXLINE 4096
@@ -70,8 +70,8 @@ int validateJSON(char * buffer) {
 	str.erase(std::remove(str.begin(), str.end(), '\\'), str.end());
 	str.erase(0,1);
 	str.pop_back();
-
-	int n = sizeof(str);
+	cout << str.length() << endl;
+	int n = str.length();
 	char temp[n];
 	strcpy(temp, str.c_str());
 
@@ -273,7 +273,7 @@ int main (int argc, char **argv)
         if (FD_ISSET(sockfd, &rset)) {
             bp = buf;
             bytes_to_read = BUFLEN;
-            n = recv (sockfd, buffer, bytes_to_read, 0);
+            n = recv (sockfd, buffer, 65000, 0);
     		if (n == 0) { // connection closed by
             printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
             close(sockfd);
@@ -320,6 +320,7 @@ int main (int argc, char **argv)
                     cout << "Couldn't retrieve client based on Id" << endl;
                     continue;
                 }
+		
 				// Value::ConstMemberIterator itr = document.FindMember("lobbyId");
 				// 	if (itr == document.MemberEnd()) {
 				// 	throw std::invalid_argument("bad json object");
@@ -338,11 +339,8 @@ int main (int argc, char **argv)
 							cout << "Received client request to create lobby!" << endl;
 							//create lobby, send lobby back
 							lobbyID = lobbyManager->createLobby(clientObj);
-							// lobbyResponse = lobbyManager->getLobby(lobbyID);
-							// if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
-					        //     cout << "Failed to send!" << endl;
 							Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
-							lobbyResponse = lobbyManager->getLobby(lobbyID);
+							lobbyResponse = lobbyManager->getLobby(lobbyID);	
 							if ((sent= sendResponse(sockfd, lobbyResponse)) < 0)
 					            cout << "Failed to send!" << endl;
 							}
@@ -399,22 +397,26 @@ int main (int argc, char **argv)
 							break;
 						case LEAVE:
 							{
-								Value::ConstMemberIterator itr = document.FindMember("lobbyId");
+								cout << "Hit leave lobby!"<< endl;
+ 								Value::ConstMemberIterator itr = document.FindMember("lobbyId");
 								if (itr == document.MemberEnd()) {
 									throw std::invalid_argument("bad json object");
 								}
 								lobbyID = std::stoi(document["lobbyId"].GetString());
+								cout << lobbyID << endl;
 								Lobby * lobby = lobbyManager->getLobbyObject(lobbyID);
 								lobby->removeClient(clientObj);
-								if (lobby->getCurrentPlayers() == 0) {
+								cout << "removed client! " << endl;
+								if (lobby->getClientList().size() == 0) {
 									lobbyManager->deleteLobby(lobbyID);
+									cout << "deleted lobby!" << endl;
 								}
 								else {
 									broadcastLobbyUpdate(lobby);
 								}
                                 // lobbyResponse = lobbyManager->getLobby(lobbyID);
-								// if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
-					            // cout << "Failed to send!" << endl;
+								if ((sent = sendResponse(sockfd, lobbyResponse)) < 0)
+					            cout << "Failed to send!" << endl;
 							}
 							break;
 					}
