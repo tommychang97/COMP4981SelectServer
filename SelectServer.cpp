@@ -107,14 +107,14 @@ void broadcastStartLobby(Lobby * lobby) {
 	vector<float>secondTeamXLocations {46,45.8,46,45.8,44.6,45.3,45.3,45,45.3,45,44.6,44.6};
 	vector<float>secondTeamYLocations {2.2,1.5,0.8,0.1,-0.4,2.9,2.2,1.5,0.8,0,0.8,0};
 
+	vector<Client*> clientList = lobby->getClientList();
 	int firstTeamIndex = 0;
 	int secondTeamIndex = 0;
 
 	string lobbyJSON = "{\"statusCode\":200,\"responseType\":\"load\"";
-
+	lobbyJSON += ",\"numPlayers\":" + to_string(clientList.size());
 	// Start of "Players" key of player array
 	lobbyJSON += ",\"Players\":[";
-	vector<Client*> clientList = lobby->getClientList();
 	for (auto it = clientList.begin(); it != clientList.end(); it++) {
 		float x;
 		float y;
