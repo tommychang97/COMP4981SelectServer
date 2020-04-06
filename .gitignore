@@ -1,2 +1,4 @@
 *.o
 *.exe
+defaultTCP.c
+defaultTCP2.c

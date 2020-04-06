@@ -119,15 +119,16 @@ int main (int argc, char **argv)
 
 	n = recv (sd, buf5, 1000, 0);
 	printf ("%s\n", buf5);
-    sleep(10);
 
-	
-	send (sd, playerReady, BUFLEN, 0);
-	printf("Receive:\n");
-	bp = rbuf;
-	bytes_to_read = BUFLEN;
-    n = recv (sd, buf6, 1000, 0);
-	printf ("%s\n", buf6);
+	while (1) {
+		
+	}
+		// send (sd, playerReady, BUFLEN, 0);
+		// printf("Receive:\n");
+		// bp = rbuf;
+		// bytes_to_read = BUFLEN;
+		// n = recv (sd, buf6, 1000, 0);
+		// printf ("%s\n", buf6);
 
 	// send (sd, switchStatus, BUFLEN, 0);
 	// printf("Receive:\n");

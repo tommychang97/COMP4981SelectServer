@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <unistd.h>
 #include <array>
+#include <list>
 
 #define SERVER_TCP_PORT 7000	// Default port
 #define BUFLEN	65000	//Buffer length
@@ -46,7 +47,7 @@ static void SystemFatal(const char* );
 volatile int UDP_PORT = 12500;
 LobbyManager * lobbyManager = new LobbyManager();
 Document document;
-std::vector<Client*>clientList;
+std::vector<Client*>clientList;	
 
 int validateJSON(char * buffer) {
 	/* This portion is used to test with your own client */
@@ -101,28 +102,49 @@ void broadcastStartGame(Lobby * lobby) {
 }
 void broadcastStartLobby(Lobby * lobby) {
 	cout << "Broadcasting start lobby!" << endl;
-	const char * gameObject = "{\"statusCode\":200,\"responseType\":\"load\",\"Player\":{\"playerName\":\"tempPlayer\",\"id\":-1,\"classType\":-1,\"ready\":\"false\",\"team\":-1},\"players\":[],\"crystals\":[],\"attackObject\":[],\"gameState\":1}";
-	Document ClientInfo;
-	ClientInfo.Parse(gameObject);
+	vector<float>firstTeamXLocations {-46,-46,-46,-46,-45,7,-45.3,-45.3,-45.3,-45.3,-45.3,-44.6,-44.6};
+	vector<float>firstTeamYLocations {2.2,1.5,0.8,0.1,0.6,2.9,2.2,1.5,0.8,0,0.8,0};
+	vector<float>secondTeamXLocations {46,45.8,46,45.8,44.6,45.3,45.3,45,45.3,45,44.6,44.6};
+	vector<float>secondTeamYLocations {2.2,1.5,0.8,0.1,-0.4,2.9,2.2,1.5,0.8,0,0.8,0};
+
+	int firstTeamIndex = 0;
+	int secondTeamIndex = 0;
+
+	string lobbyJSON = "{\"statusCode\":200,\"responseType\":\"load\"";
+
+	// Start of "Players" key of player array
+	lobbyJSON += ",\"Players\":[";
 	vector<Client*> clientList = lobby->getClientList();
 	for (auto it = clientList.begin(); it != clientList.end(); it++) {
-		Value & clientUsername = ClientInfo["Player"]["playerName"];
-		Value & clientID = ClientInfo["Player"]["id"];
-		Value & clientClass = ClientInfo["Player"]["classType"];
-		Value & clientReady = ClientInfo["Player"]["ready"];
-		Value & clientTeam = ClientInfo["Player"]["team"];
-		clientUsername.SetString((*it)->getPlayer_name().c_str(),ClientInfo.GetAllocator());
-		clientID.SetInt((*it)->getPlayer_Id());
-		clientClass.SetInt((*it)->getCharacterClass());
-		clientReady.SetString((*it)->getStatus().c_str(), ClientInfo.GetAllocator());
-		clientTeam.SetInt((*it)->getTeam());
-		StringBuffer buffer;
-		Writer<StringBuffer> writer(buffer);
-		ClientInfo.Accept(writer);
-		string response = buffer.GetString();
-		send((*it)->getTCPSocket(), response.c_str(), response.size(), 0);
-		cout << "broadcasted start lobby once" << endl;
+		float x;
+		float y;
+		if ((*it)->getTeam() == 0) {
+			x = firstTeamXLocations.front();
+			y = firstTeamYLocations.front();
+			firstTeamXLocations.erase(firstTeamXLocations.begin());
+			firstTeamYLocations.erase(firstTeamYLocations.begin());
+
+		}
+		else {
+			x = secondTeamXLocations.front();
+			y = secondTeamYLocations.front();
+			secondTeamXLocations.erase(secondTeamXLocations.begin());
+			secondTeamYLocations.erase(secondTeamYLocations.begin());
+		}
+		lobbyJSON += "{\"userId\":\"" + to_string((*it)->getPlayer_Id()) + "\"," +
+			"\"x\":\"" + to_string(x) + "\"," +
+			"\"y\":\"" + to_string(y) + "\"" +
+			+"}";
+	if (next(it, 1) != clientList.end())
+		lobbyJSON += ",";
 	}
+	lobbyJSON += "]}";
+	cout << lobbyJSON << endl;
+	for (auto it = clientList.begin(); it != clientList.end(); it++) {
+		cout << "sent start lobby!" << endl;
+		send((*it)->getTCPSocket(), lobbyJSON.c_str(),lobbyJSON.size(), 0);
+	}
+
 }
 /*["Player"]["playerName"]
 	This function is used to send the initial respones back to the client when they connect to the server
